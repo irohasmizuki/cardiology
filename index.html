@@ -1,0 +1,1560 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>心電図検定 1級演習</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #ffffff;
+      --panel: #f8fafc;
+      --line: #d9e1ea;
+      --text: #182230;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --green: #15803d;
+      --amber: #b45309;
+      --red: #b91c1c;
+      --shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+      line-height: 1.6;
+      letter-spacing: 0;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      color: var(--text);
+      padding: 10px 14px;
+      touch-action: manipulation;
+      cursor: pointer;
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    button:disabled {
+      color: #94a3b8;
+      background: #f8fafc;
+      cursor: not-allowed;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible {
+      outline: 3px solid rgba(37, 99, 235, 0.25);
+      outline-offset: 2px;
+    }
+
+    .app {
+      width: min(980px, 100%);
+      margin: 0 auto;
+      padding: max(16px, env(safe-area-inset-top)) 16px max(28px, env(safe-area-inset-bottom));
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 0 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 27px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .small-link {
+      min-height: 40px;
+      white-space: nowrap;
+      color: var(--blue);
+      border-color: #c7d2fe;
+      background: #f8fbff;
+    }
+
+    .notice {
+      margin: 16px 0;
+      padding: 12px 14px;
+      border: 1px solid #f5d0a7;
+      border-radius: var(--radius);
+      color: #5f3712;
+      background: #fffaf2;
+      font-size: 13px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 282px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .side,
+    .main-panel {
+      min-width: 0;
+    }
+
+    .section-title {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .theme-grid,
+    .mode-grid,
+    .export-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .theme-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .mode-grid,
+    .export-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .filter-button,
+    .mode-button,
+    .export-button {
+      width: 100%;
+      text-align: left;
+    }
+
+    .filter-button[aria-pressed="true"],
+    .mode-button[aria-pressed="true"] {
+      border-color: var(--blue);
+      background: #eef5ff;
+      color: #123b83;
+      font-weight: 750;
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+    }
+
+    .search-box {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      background: #ffffff;
+      color: var(--text);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin: 18px 0;
+    }
+
+    .stat {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+    }
+
+    .stat-value {
+      display: block;
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .card-shell {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfdff;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #edf2f7;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .card-count {
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .study-card {
+      min-height: 390px;
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .face-label {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .card-topic {
+      margin: 0 0 10px;
+      color: #0f172a;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .finding,
+    .answer {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 750;
+      line-height: 1.55;
+    }
+
+    .meta-lines {
+      margin: 14px 0 0;
+      padding: 12px 0 0;
+      border-top: 1px solid var(--line);
+      color: #334155;
+      font-size: 15px;
+    }
+
+    .meta-lines p {
+      margin: 7px 0;
+    }
+
+    .reason {
+      margin: 14px 0 0;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      color: #334155;
+      font-size: 15px;
+    }
+
+    .empty-state {
+      min-height: 300px;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .controls,
+    .judgement {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      border-top: 1px solid var(--line);
+      background: #fbfdff;
+    }
+
+    .controls {
+      grid-template-columns: 1fr 1.3fr 1fr;
+    }
+
+    .judgement {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .primary {
+      color: #ffffff;
+      border-color: var(--blue);
+      background: var(--blue);
+      font-weight: 750;
+    }
+
+    .understood {
+      color: #ffffff;
+      border-color: var(--green);
+      background: var(--green);
+      font-weight: 750;
+    }
+
+    .review {
+      color: #ffffff;
+      border-color: var(--amber);
+      background: var(--amber);
+      font-weight: 750;
+    }
+
+    .danger {
+      color: var(--red);
+      border-color: #fecaca;
+      background: #fff5f5;
+    }
+
+    .status-line {
+      min-height: 26px;
+      margin: 10px 2px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .export-result {
+      margin-top: 14px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+    }
+
+    .export-result[hidden] {
+      display: none;
+    }
+
+    .export-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .export-text {
+      width: 100%;
+      min-height: 160px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      color: var(--text);
+      padding: 10px;
+      resize: vertical;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    details {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+    }
+
+    summary {
+      min-height: 46px;
+      padding: 12px 14px;
+      cursor: pointer;
+      font-weight: 750;
+    }
+
+    .details-body {
+      padding: 0 14px 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .details-body ul {
+      margin: 8px 0 0;
+      padding-left: 1.2em;
+    }
+
+    @media (max-width: 720px) {
+      .app {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .topbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .side {
+        margin-bottom: 14px;
+      }
+
+      .theme-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .filter-button {
+        text-align: center;
+      }
+
+      .stats {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        margin: 12px 0;
+      }
+
+      .stat {
+        padding: 8px 6px;
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 18px;
+      }
+
+      .stat-label {
+        font-size: 11px;
+      }
+
+      .finding,
+      .answer {
+        font-size: 19px;
+      }
+
+      .study-card {
+        min-height: 430px;
+      }
+
+      .controls {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .controls .primary {
+        grid-column: 1 / -1;
+        order: -1;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .theme-grid,
+      .mode-grid,
+      .export-grid,
+      .judgement {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .finding,
+      .answer {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <h1>心電図検定 1級演習</h1>
+        <p class="subtitle">高度な鑑別・落とし穴を反復する、iPhone向けカード</p>
+      </div>
+      <button class="small-link" id="shuffleButton" type="button">ランダム</button>
+    </header>
+
+    <p class="notice">
+      1級相当の独自学習問題です。公式問題の転載ではありません。実臨床では患者背景、症状、12誘導全体、経時変化、最新の公式資料、施設プロトコルを必ず確認してください。
+    </p>
+
+    <div class="layout">
+      <aside class="side" aria-label="学習設定">
+        <p class="section-title">テーマ</p>
+        <div class="theme-grid" id="themeButtons"></div>
+
+        <div class="stats" aria-label="進捗">
+          <div class="stat">
+            <span class="stat-value" id="totalCount">0</span>
+            <span class="stat-label">対象</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="doneCount">0</span>
+            <span class="stat-label">理解</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="reviewCount">0</span>
+            <span class="stat-label">復習</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="newCount">0</span>
+            <span class="stat-label">未判定</span>
+          </div>
+        </div>
+
+        <p class="section-title">検索</p>
+        <div class="search-row">
+          <input class="search-box" id="keywordInput" type="search" placeholder="例: WPW, VT, aVR">
+          <button id="clearSearchButton" type="button">消去</button>
+        </div>
+
+        <p class="section-title" style="margin-top:18px;">出題</p>
+        <div class="mode-grid">
+          <button class="mode-button" id="allModeButton" type="button" aria-pressed="true">全カード</button>
+          <button class="mode-button" id="reviewModeButton" type="button" aria-pressed="false">要復習のみ</button>
+        </div>
+
+        <p class="section-title" style="margin-top:18px;">データ</p>
+        <div class="export-grid">
+          <button class="export-button" id="jsonExportButton" type="button">JSON</button>
+          <button class="export-button" id="csvExportButton" type="button">CSV</button>
+        </div>
+        <button class="danger" id="resetButton" type="button" style="width:100%; margin-top:8px;">進捗をリセット</button>
+      </aside>
+
+      <section class="main-panel" aria-live="polite">
+        <div class="card-shell" id="cardShell">
+          <div class="card-head">
+            <span class="badge" id="themeBadge">テーマ</span>
+            <span class="card-count" id="cardCount">0 / 0</span>
+          </div>
+
+          <article class="study-card" id="studyCard" tabindex="0" role="button" aria-label="カードを裏返す">
+            <div id="cardContent"></div>
+          </article>
+
+          <div class="controls">
+            <button id="prevButton" type="button">前へ</button>
+            <button class="primary" id="flipButton" type="button">解説を見る</button>
+            <button id="nextButton" type="button">次へ</button>
+          </div>
+
+          <div class="judgement">
+            <button class="understood" id="understoodButton" type="button">理解した</button>
+            <button class="review" id="needsReviewButton" type="button">要復習</button>
+          </div>
+        </div>
+
+        <p class="status-line" id="statusLine"></p>
+
+        <div class="export-result" id="exportResult" hidden>
+          <label class="export-label" for="exportText" id="exportLabel">エクスポート結果</label>
+          <textarea class="export-text" id="exportText" readonly></textarea>
+        </div>
+
+        <details>
+          <summary>収録論点</summary>
+          <div class="details-body">
+            <p id="bankSummary"></p>
+            <ul id="topicList"></ul>
+          </div>
+        </details>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "ecgKenteiLevel1State.v2";
+    const ALL_THEME = "すべて";
+    const BASE_THEMES = [
+      ALL_THEME,
+      "脚ブロック",
+      "房室ブロック",
+      "WPW",
+      "頻脈",
+      "心筋梗塞",
+      "ST-T鑑別",
+      "肥大・負荷",
+      "電解質・薬剤",
+      "ペーシング",
+      "若年者・正常変異",
+      "アーチファクト"
+    ];
+
+    const contexts = [
+      "症状だけでは決め手に欠ける場面",
+      "救急外来で初回心電図だけを見た場面",
+      "経時変化の確認が必要な場面"
+    ];
+
+    const baseCases = [
+      {
+        theme: "脚ブロック",
+        topic: "右脚ブロック様波形とBrugada型",
+        diagnosis: "Brugada型心電図を疑い、単純な右脚ブロックとして片付けない。",
+        why: "V1〜V2のST形状が主所見で、QRS終末遅延だけでは説明しにくい時は右側胸部誘導の置き方も含めて評価します。",
+        findings: ["V1〜V2でrSr'様だが、J点からcoved型にSTが上がる。", "V1のR'が高く、T波が陰転して右脚ブロックに見える。", "QRS幅は境界域だが、右側胸部誘導でST上昇が目立つ。"],
+        clues: ["高位肋間でST上昇が強調される。", "I・V6の幅広いS波が典型的右脚ブロックほど明瞭でない。", "発熱や薬剤で波形が変動しうる。"],
+        traps: ["右脚ブロックのラベルだけで終えると危険な所見を見落とす。", "若年者の不完全右脚ブロックと混同しやすい。", "ST上昇の形を見ずにQRS幅だけで判断しやすい。"]
+      },
+      {
+        theme: "脚ブロック",
+        topic: "左脚ブロック中の急性冠症候群",
+        diagnosis: "左脚ブロックに合併した急性虚血を疑う。",
+        why: "左脚ブロックでは二次性ST-T変化が基本ですが、QRS方向に対して不釣り合いなST変化は虚血を示唆します。",
+        findings: ["左脚ブロック波形に加え、V1〜V3で過度のST低下がある。", "幅広いQRSの方向と一致しないST上昇が連続誘導にある。", "V5〜V6のR波優位誘導でdiscordantなST上昇が大きい。"],
+        clues: ["修正Sgarbossaの考え方でST/S比を確認したい。", "胸痛の有無だけでなく旧心電図との差が重要。", "ペーシング波形でも同様の考え方を応用する。"],
+        traps: ["左脚ブロックだからSTは読めない、と決めつけない。", "二次性変化と一次性虚血を分ける視点が必要。", "単一誘導ではなく連続誘導で評価する。"]
+      },
+      {
+        theme: "脚ブロック",
+        topic: "二枝ブロックと伝導障害リスク",
+        diagnosis: "右脚ブロックに左脚前枝ブロックを伴う二枝ブロックを考える。",
+        why: "右脚ブロック所見に左軸偏位が加わると、His-Purkinje系の広い障害を示唆します。",
+        findings: ["rsR'型の右脚ブロックに、著明な左軸偏位を伴う。", "I誘導でqR、II・III・aVFでrS、V1でrsR'を認める。", "QRS幅延長に加え、下壁誘導で深いS波が目立つ。"],
+        clues: ["PR延長を伴う時は進行性伝導障害の文脈で見る。", "失神や徐脈発作の有無を確認したい。", "後枝ブロックとの軸の向きの違いを確認する。"],
+        traps: ["左軸偏位を左室肥大だけで説明しない。", "三枝ブロックという言葉を安易に診断名として使わない。", "単なる右脚ブロックより伝導障害の広がりを意識する。"]
+      },
+      {
+        theme: "脚ブロック",
+        topic: "左脚後枝ブロックの鑑別",
+        diagnosis: "左脚後枝ブロックを鑑別に入れる。",
+        why: "右軸偏位と下壁誘導のqR、I・aVLのrSがそろう時に考えますが、右室肥大や側壁梗塞の除外が必要です。",
+        findings: ["右軸偏位が強く、II・III・aVFでqRを示す。", "I・aVLでrS、下壁誘導でR波優位を示す。", "右脚ブロック様波形に右軸偏位が合併する。"],
+        clues: ["肺疾患や右室負荷の臨床背景がないかを確認する。", "側壁梗塞の異常Q波との関係を確認する。", "左脚前枝ブロックより頻度が低く、除外診断の要素が強い。"],
+        traps: ["右軸偏位だけで後枝ブロックと断定しない。", "下壁誘導のqRを梗塞だけで説明しない。", "頻度が低い所見ほど鑑別を丁寧に置く。"]
+      },
+      {
+        theme: "脚ブロック",
+        topic: "変行伝導と心室起源の鑑別",
+        diagnosis: "上室性期外収縮の変行伝導を考えるが、心室期外収縮も除外する。",
+        why: "先行RR短縮後に脚の不応期へ入り、右脚ブロック型の幅広いQRSを作ることがあります。",
+        findings: ["早いタイミングの幅広いQRSが右脚ブロック様に出現する。", "直前RRが短く、その後にwide QRSが続く。", "P波らしき成分がwide QRSに先行する。"],
+        clues: ["Ashman現象では長短周期後に変行しやすい。", "代償性休止の完全性を確認する。", "同じ形のwide QRSが連発するなら頻拍の評価へ進む。"],
+        traps: ["wide QRSをすべて心室性と決めない。", "P波の位置を見落とすと診断が逆になる。", "心房細動中の変行伝導は心室期外収縮に似る。"]
+      },
+      {
+        theme: "房室ブロック",
+        topic: "Wenckebach型とblocked PAC",
+        diagnosis: "Wenckebach型房室ブロックと非伝導性PACを鑑別する。",
+        why: "PRが周期的に延長して脱落するのか、早期P波がT波に隠れてQRSが出ないのかで判断します。",
+        findings: ["QRS脱落前にPRが少しずつ延長している。", "T波の形が脱落拍の直前だけ微妙に変形している。", "RR間隔が群発的に短長を繰り返す。"],
+        clues: ["隠れた早期P波をT波上で探す。", "PP間隔が規則的かどうかを確認する。", "迷走神経緊張時のWenckebachは若年者でも見られる。"],
+        traps: ["QRSが抜けたらすべて房室ブロックとは限らない。", "T波に埋もれたP波を見逃しやすい。", "治療判断では症状と部位推定が重要になる。"]
+      },
+      {
+        theme: "房室ブロック",
+        topic: "Mobitz II型の局在",
+        diagnosis: "His-Purkinje系のMobitz II型房室ブロックを疑う。",
+        why: "PR一定の突然脱落と幅広いQRSは、房室結節より末梢の障害を示唆します。",
+        findings: ["PR間隔が一定のままQRSが突然脱落する。", "脱落しない拍のQRS幅が広い。", "2拍連続でP波が伝導しない部分がある。"],
+        clues: ["脚ブロックを伴う場合は伝導系病変を強く疑う。", "徐脈症状や失神がある場合は緊急度が上がる。", "Wenckebach様のPR延長がないことを確認する。"],
+        traps: ["見かけの2度ブロックを非伝導性PACと混同しない。", "QRS幅が狭い場合でも局在推定は慎重に行う。", "PR一定という一点だけで安全とは考えない。"]
+      },
+      {
+        theme: "房室ブロック",
+        topic: "2:1房室ブロックの部位推定",
+        diagnosis: "2:1房室ブロックでは房室結節性かHis-Purkinje性かを推定する。",
+        why: "全てのPR推移が見えないため、QRS幅、心拍数、自律神経反応、背景疾患から部位を推定します。",
+        findings: ["P波2個にQRS1個で、PR延長の有無が判断しづらい。", "2:1伝導で心室拍数が約40〜50/分。", "QRS幅が広く、脚ブロックを伴う2:1伝導。"],
+        clues: ["幅広いQRSなら末梢性を疑いやすい。", "運動やアトロピン反応は部位推定に役立つことがある。", "急性下壁梗塞では房室結節性のことがある。"],
+        traps: ["2:1だからWenckebachともMobitz IIとも即断できない。", "P波をT波と誤認すると頻拍に見える。", "症状の有無で緊急度が大きく変わる。"]
+      },
+      {
+        theme: "房室ブロック",
+        topic: "完全房室ブロックの補充調律",
+        diagnosis: "完全房室ブロックで、補充調律の起源を推定する。",
+        why: "P波とQRSの解離に加え、QRS幅と心室拍数から接合部性か心室性かを考えます。",
+        findings: ["P波とQRSが独立し、QRSは狭く規則的に出る。", "P波とQRSが独立し、幅広いQRSが30/分台で出る。", "心房拍数は保たれるが心室拍数が遅い。"],
+        clues: ["狭QRSで比較的速い補充なら接合部性を考える。", "幅広く遅い補充なら心室性で不安定になりやすい。", "下壁梗塞か前壁梗塞かで背景が異なる。"],
+        traps: ["AV dissociationを見たら全て完全房室ブロックとは限らない。", "心室頻拍でもAV dissociationが出る。", "補充調律があるから安全とは限らない。"]
+      },
+      {
+        theme: "房室ブロック",
+        topic: "心室頻拍中の房室解離",
+        diagnosis: "完全房室ブロックではなく、心室頻拍に伴う房室解離を疑う。",
+        why: "wide QRS頻拍でP波が独立して見える場合、房室解離はVTを強く支持します。",
+        findings: ["幅広いQRS頻拍中にP波がQRSと無関係に走る。", "capture beatまたはfusion beatらしき狭い拍が混じる。", "RRはほぼ規則的で、QRS形が通常の脚ブロックと異なる。"],
+        clues: ["血行動態が保たれていてもVTは否定できない。", "既往に心筋梗塞や心筋症があればVT寄りに見る。", "P波が見える誘導を複数で探す。"],
+        traps: ["安定しているから上室性と判断しない。", "房室解離を完全房室ブロックだけの所見と考えない。", "wide QRS頻拍ではVTを優先して除外する。"]
+      },
+      {
+        theme: "WPW",
+        topic: "WPW A型と左側副伝導路",
+        diagnosis: "WPW症候群 A型、左側副伝導路を考える。",
+        why: "V1で陽性デルタ波となる時は、左側から右室方向へ早期興奮が進むパターンを考えます。",
+        findings: ["PR短縮、デルタ波、V1で陽性優位のQRSを認める。", "前胸部でR波増高が早く、左側副伝導路を示唆する。", "QRS初期成分が鈍く、頻拍既往と整合する。"],
+        clues: ["デルタ波の極性で副伝導路局在を大まかに推定する。", "頻拍時はAVRTの向きでQRS幅が変わる。", "洞調律時のST-T変化は早期興奮の影響を受ける。"],
+        traps: ["高いR波を右室肥大だけで説明しない。", "PR短縮を見落とすと診断が遠のく。", "ST-T変化を虚血と即断しない。"]
+      },
+      {
+        theme: "WPW",
+        topic: "WPW B型と偽性梗塞",
+        diagnosis: "WPW症候群 B型による偽性梗塞パターンを考える。",
+        why: "右側副伝導路ではV1が陰性寄りとなり、下壁や前壁のQ波様変化を作ることがあります。",
+        findings: ["PR短縮とデルタ波に加え、V1で陰性優位のQRSを示す。", "下壁誘導にQ波様の初期陰性成分がある。", "梗塞を疑うQ波に見えるがQRS立ち上がりが鈍い。"],
+        clues: ["デルタ波がQ波様成分を作ることがある。", "旧心電図や頻拍歴が鑑別に役立つ。", "早期興奮が消えるとQ波様所見も変わる可能性がある。"],
+        traps: ["異常Q波だけで陳旧性梗塞と決めない。", "ST-T異常も副伝導路の影響を受ける。", "PR短縮を必ず確認する。"]
+      },
+      {
+        theme: "WPW",
+        topic: "偽性心筋梗塞と本当の虚血の併存",
+        diagnosis: "WPWによる偽性梗塞に加え、急性虚血の併存も除外する。",
+        why: "早期興奮はST-T評価を難しくしますが、症状、連続誘導、経時変化が合えば虚血を見逃してはいけません。",
+        findings: ["デルタ波があり、下壁誘導でQ波様成分とST変化がある。", "PR短縮を伴うが、胸痛とST変化の経時変化が目立つ。", "早期興奮の極性だけでは説明しにくいST偏位がある。"],
+        clues: ["過去心電図との比較が特に重要。", "副伝導路の影響と一次性ST変化を分ける。", "症状とトロポニンなどの検査を合わせる必要がある。"],
+        traps: ["WPWだから虚血は読めないと止めない。", "偽性梗塞の知識で本当の梗塞を見逃さない。", "一枚の心電図だけで結論を固定しない。"]
+      },
+      {
+        theme: "WPW",
+        topic: "偽性心房細動とpre-excited AF",
+        diagnosis: "WPWに伴うpre-excited AFを疑う。",
+        why: "不規則なwide QRS頻拍でQRS幅が拍ごとに変わる場合、副伝導路を介した心房細動を考えます。",
+        findings: ["RR間隔が不規則で、幅広いQRSの形が拍ごとに変化する。", "非常に速い不規則頻拍で、デルタ波様の初期成分が混じる。", "狭QRS拍とwide QRS拍が不規則に混在する。"],
+        clues: ["通常のAF with aberrancyよりQRS形の変動が大きい。", "房室結節だけを抑える薬剤選択には注意が必要。", "洞調律時にPR短縮やデルタ波がないか確認する。"],
+        traps: ["心房細動だから全て狭QRSとは限らない。", "不規則wide QRS頻拍をVTだけで説明しない。", "AVRTとAFの違いを整理する。"]
+      },
+      {
+        theme: "WPW",
+        topic: "反方向性AVRTと心室頻拍",
+        diagnosis: "反方向性AVRTを鑑別に置きつつ、wide QRS頻拍ではVTを優先して除外する。",
+        why: "副伝導路を順行し房室結節を逆行する頻拍はwide QRSになりますが、見た目だけではVTと区別困難です。",
+        findings: ["規則的なwide QRS頻拍で、頻拍停止後にデルタ波が見える。", "若年者のwide QRS頻拍で、洞調律時にWPW所見がある。", "QRS形が通常の脚ブロック型と合わない。"],
+        clues: ["洞調律時心電図が診断の鍵になる。", "AV解離やcapture beatがあればVT寄り。", "副伝導路の順行性伝導でwide QRSになりうる。"],
+        traps: ["若年者だからVTではないと判断しない。", "WPWがあるから全てAVRTとも限らない。", "頻拍中だけでなく停止後の心電図も確認する。"]
+      },
+      {
+        theme: "頻脈",
+        topic: "wide QRS頻拍とVT優先",
+        diagnosis: "心室頻拍を第一に疑う。",
+        why: "wide QRS頻拍では頻度と安全性の観点からVTを優先して扱い、上室性は所見で支持されてから考えます。",
+        findings: ["規則的なwide QRS頻拍でQRS幅が明らかに広い。", "胸部誘導でconcordanceに近い波形を示す。", "軸が極端で、通常の脚ブロック型に合わない。"],
+        clues: ["AV解離、capture beat、fusion beatを探す。", "器質的心疾患の既往があればVT寄り。", "血圧が保たれていてもVTは否定できない。"],
+        traps: ["安定しているからSVTと判断しない。", "年齢だけでVTを否定しない。", "wide QRS頻拍の初期対応では危険側に倒す。"]
+      },
+      {
+        theme: "頻脈",
+        topic: "ベラパミル感受性VT",
+        diagnosis: "左脚後枝起源の特発性心室頻拍を考える。",
+        why: "比較的若年者のRBBB型wide QRS頻拍で左軸偏位を伴う時に考えます。",
+        findings: ["RBBB型のwide QRS頻拍に左軸偏位を伴う。", "比較的QRS幅が極端に広くない規則的頻拍。", "V1でRBBB型、下壁誘導で陰性優位の頻拍。"],
+        clues: ["構造的心疾患が乏しい若年者でもVTは起こる。", "左脚後枝起源ならRBBB型かつ左軸偏位になりやすい。", "PSVT with aberrancyとの鑑別が必要。"],
+        traps: ["若年者のwide QRSを全部PSVTと考えない。", "比較的安定していることはVT否定にならない。", "薬剤名だけで安易に治療判断へ進まない。"]
+      },
+      {
+        theme: "頻脈",
+        topic: "心房粗動2:1伝導",
+        diagnosis: "心房粗動2:1伝導を考える。",
+        why: "150/分前後の規則的頻拍では、T波やQRSに隠れた粗動波を探します。",
+        findings: ["心拍数150/分前後で規則的、下壁誘導に鋸歯状波がある。", "狭QRS頻拍だがV1に規則的な心房波が見える。", "T波と思った波形が毎拍同じ間隔で続く。"],
+        clues: ["房室伝導比が変わると診断しやすくなることがある。", "下壁誘導とV1でF波を探す。", "ATや洞性頻脈との鑑別では心房波の規則性を見る。"],
+        traps: ["150/分なら洞性頻脈と決めない。", "F波がT波に隠れるとPSVTに見える。", "伝導比だけを見て心房レートを見落とさない。"]
+      },
+      {
+        theme: "頻脈",
+        topic: "心房頻拍とAVNRT",
+        diagnosis: "心房頻拍をAVNRTと鑑別する。",
+        why: "P波がQRSから離れて見え、心房レートが主体なら心房頻拍を考えます。",
+        findings: ["狭QRS頻拍で、P波がQRSの前に一定して見える。", "warm upまたはcool down様に頻拍レートが変化する。", "下壁誘導のP波形が洞性P波と異なる。"],
+        clues: ["AVブロックを伴っても心房波が続くなら心房頻拍寄り。", "AVNRTではP波がQRS内や直後に隠れやすい。", "心房波の軸と形を洞調律時と比べる。"],
+        traps: ["狭QRS頻拍を全てPSVTでまとめない。", "P波をT波と見間違えると機序を誤る。", "停止様式だけで機序を断定しない。"]
+      },
+      {
+        theme: "頻脈",
+        topic: "多源性心房頻拍と心房細動",
+        diagnosis: "多源性心房頻拍を考える。",
+        why: "不規則頻拍でも、3種類以上のP波が識別でき基線が保たれる時は心房細動ではありません。",
+        findings: ["RRは不規則だが、形の異なるP波が複数見える。", "基線は保たれ、P波ごとにPR間隔が変化する。", "肺疾患背景で不規則な狭QRS頻拍を示す。"],
+        clues: ["少なくとも3種類のP波形を探す。", "AFでは明瞭なP波がなく基線が細かく揺れる。", "COPDなどの背景が鑑別の補助になる。"],
+        traps: ["不規則ならAFと即断しない。", "P波を丁寧に追わないと見逃す。", "レートだけで頻拍機序は決まらない。"]
+      },
+      {
+        theme: "頻脈",
+        topic: "long RP頻拍",
+        diagnosis: "long RP tachycardiaとして心房頻拍、PJRT、非通常型AVNRTを鑑別する。",
+        why: "P波がQRSのかなり後ろに出る頻拍では、通常型AVNRT以外の機序を考えます。",
+        findings: ["狭QRS頻拍でRP間隔がPR間隔より長い。", "QRS後方に陰性P波が一定して見える。", "頻拍は規則的だがP波がQRS直後ではなく離れている。"],
+        clues: ["下壁誘導の逆行性P波を確認する。", "小児や若年者ではPJRTも考える。", "ATではP波形と房室伝導の関係を追う。"],
+        traps: ["PSVTとだけ記録して機序を止めない。", "P波の位置を見ないとshort RPと混同する。", "治療方針は機序で変わりうる。"]
+      },
+      {
+        theme: "頻脈",
+        topic: "Torsades de pointesリスク",
+        diagnosis: "QT延長に伴う多形性心室頻拍リスクを考える。",
+        why: "QT延長、pause依存性、R on Tがそろうとtorsades de pointesの前段階として注意します。",
+        findings: ["QT延長があり、PVCがT波終末に重なる。", "長短周期後に多形性wide QRS連発が始まる。", "T波形が交互に変化し、QTが明らかに延長している。"],
+        clues: ["低K、低Mg、薬剤、徐脈を背景として確認する。", "多形性VTでもQTが長いか短いかで鑑別が変わる。", "心拍補正QTを過信せず実波形を見る。"],
+        traps: ["単なるPVC連発として軽く見ない。", "QT延長薬の内服確認を忘れない。", "wide QRS頻拍の形だけで単形性VTと混同しない。"]
+      },
+      {
+        theme: "頻脈",
+        topic: "副収縮と心室期外収縮",
+        diagnosis: "心室副収縮を考える。",
+        why: "心室内の独立した焦点が保護ブロックを持つと、期外収縮の連結期が一定しない一方で拍間隔に公約数が出ます。",
+        findings: ["形の似たPVCが出るが連結期が一定しない。", "PVC同士の間隔がある基本周期の倍数に近い。", "融合収縮らしき中間形のQRSが混じる。"],
+        clues: ["固定連結期の通常PVCと比較する。", "interectopic intervalの公約数を探す。", "洞調律との融合拍が診断を助ける。"],
+        traps: ["連結期が違うから多源性PVCとだけ考えない。", "ランダムに見える時ほど周期性を探す。", "副収縮は試験で問われやすい機序問題になる。"]
+      },
+      {
+        theme: "心筋梗塞",
+        topic: "後壁梗塞",
+        diagnosis: "後壁梗塞を疑う。",
+        why: "V1〜V3の水平型ST低下と高いR波は、後壁ST上昇の鏡像として現れることがあります。",
+        findings: ["V1〜V3で水平型ST低下がありR波が高い。", "胸痛があり、前胸部誘導のST低下が局在している。", "下壁または側壁誘導のST上昇に前胸部ST低下を伴う。"],
+        clues: ["V7〜V9の背側誘導を追加すると診断に近づく。", "単なる前壁虚血のST低下と区別する。", "R/S比とT波の向きを合わせて見る。"],
+        traps: ["V1〜V3のST低下をNSTEMIで止めない。", "後壁誘導を取らないと見逃しやすい。", "R波増高を右室肥大だけで説明しない。"]
+      },
+      {
+        theme: "心筋梗塞",
+        topic: "右室梗塞",
+        diagnosis: "下壁梗塞に合併した右室梗塞を疑う。",
+        why: "下壁ST上昇にV1のST上昇やIII優位のST上昇が加わる時、右室誘導で確認します。",
+        findings: ["II・III・aVFでST上昇し、IIIの上昇がIIより大きい。", "下壁ST上昇にV1のST上昇を伴う。", "下壁梗塞所見に血圧低下を疑う文脈がある。"],
+        clues: ["V3R〜V4RのST上昇を確認したい。", "責任血管として右冠動脈近位部を考える。", "前壁ST上昇との鑑別では連続誘導と鏡像変化を見る。"],
+        traps: ["下壁梗塞だけで満足しない。", "V1のST上昇を前壁中隔梗塞と即断しない。", "治療は必ず最新プロトコルで確認する。"]
+      },
+      {
+        theme: "心筋梗塞",
+        topic: "左主幹部または重症多枝病変",
+        diagnosis: "左主幹部病変または重症多枝虚血を疑う。",
+        why: "広範なST低下にaVR上昇を伴う時は、全体の内膜下虚血として高リスクに扱います。",
+        findings: ["多くの誘導でST低下し、aVRでST上昇を認める。", "V4〜V6と下壁誘導に広範なST低下がある。", "胸痛に加え、aVR上昇がV1より目立つ。"],
+        clues: ["単一誘導ではなく全体像で読む。", "左主幹部だけでなく近位LADや三枝病変も鑑別に入れる。", "頻拍や低血圧による需給不均衡も考える。"],
+        traps: ["aVRを無視しない。", "ST上昇がないから低リスクとは考えない。", "広範ST低下をジギタリス効果だけで説明しない。"]
+      },
+      {
+        theme: "心筋梗塞",
+        topic: "Wellens症候群",
+        diagnosis: "Wellens症候群を疑う。",
+        why: "胸痛軽快後のV2〜V3の深い陰性T波または二相性T波は、近位LAD高度狭窄を示唆します。",
+        findings: ["V2〜V3で左右対称性の深い陰性T波を認める。", "胸痛軽快時に前胸部誘導で二相性T波がある。", "ST上昇は目立たないが前胸部T波異常が印象的。"],
+        clues: ["発作中ではなく無痛時に目立つことがある。", "心筋逸脱酵素が軽度でも高リスクと考える。", "前壁梗塞の前段階として扱う。"],
+        traps: ["症状が軽快したから安心しない。", "単なる非特異的T波異常で流さない。", "運動負荷試験の適否は慎重に判断する。"]
+      },
+      {
+        theme: "心筋梗塞",
+        topic: "de Winterパターン",
+        diagnosis: "de Winterパターンを疑い、前壁STEMI相当として注意する。",
+        why: "前胸部誘導の上向きST低下と高い対称性T波は、近位LAD閉塞のSTEMI equivalentとして知られます。",
+        findings: ["V2〜V6でJ点低下から上行性ST低下、高く対称性T波を伴う。", "aVRで軽度ST上昇を伴う前胸部T波増高がある。", "胸痛時に前胸部ST上昇ではなく上行性ST低下を示す。"],
+        clues: ["高Kのテント状T波との鑑別が必要。", "R波進行やaVRを含めて全体で見る。", "ST上昇がない閉塞性梗塞として扱う。"],
+        traps: ["ST上昇がないので緊急度が低いと誤らない。", "高Kと決めつける前に臨床文脈を確認する。", "前胸部誘導の形を一誘導だけで判断しない。"]
+      },
+      {
+        theme: "心筋梗塞",
+        topic: "LBBBまたはペーシング中の梗塞",
+        diagnosis: "脚ブロックまたはペーシング中の急性梗塞を疑う。",
+        why: "二次性ST-T変化の中でも、QRSと一致するST変化や過度なdiscordanceは虚血を示唆します。",
+        findings: ["ペーシング波形でQRSと同方向のST上昇が連続誘導にある。", "左脚ブロック波形で過大なdiscordant ST上昇を認める。", "V1〜V3の過度なST低下が胸痛と一致する。"],
+        clues: ["Sgarbossaまたは修正Sgarbossaの考え方を使う。", "旧波形との差と症状を重視する。", "単なる二次性変化と一次性ST変化を分ける。"],
+        traps: ["ペーシング中だからSTは読めないと諦めない。", "ST変化をすべて二次性と片付けない。", "基準は補助であり臨床判断を置き換えない。"]
+      },
+      {
+        theme: "心筋梗塞",
+        topic: "陳旧性梗塞と軸偏位の鑑別",
+        diagnosis: "陳旧性梗塞と伝導障害によるQ波様変化を鑑別する。",
+        why: "異常Q波は梗塞だけでなく、軸偏位、WPW、肥大型心筋症、誘導付け間違いでも出ます。",
+        findings: ["下壁誘導にQ波があるが、左軸偏位とrSパターンも目立つ。", "側壁誘導のQ波様変化に深いS波と軸偏位を伴う。", "Q波があるがR波進行や隣接誘導の整合が乏しい。"],
+        clues: ["隣接誘導で連続性があるかを見る。", "旧心電図、画像、症状と合わせて判断する。", "誘導付け間違いではIとaVRの向きも確認する。"],
+        traps: ["Q波だけで陳旧性梗塞と決めない。", "WPWやHCMの偽性Q波を忘れない。", "軸偏位と梗塞所見を別々に読まない。"]
+      },
+      {
+        theme: "ST-T鑑別",
+        topic: "早期再分極とSTEMI",
+        diagnosis: "早期再分極を考えるが、STEMIとの鑑別を行う。",
+        why: "健常者にも見られるST上昇ですが、形、鏡像変化、経時変化、症状で虚血を除外します。",
+        findings: ["前胸部誘導で凹型ST上昇とJ点ノッチを認める。", "下壁または側壁誘導に軽度ST上昇がありT波が高い。", "若年者で安静時にST上昇が持続している。"],
+        clues: ["鏡像変化が乏しく、ST/T比が低い場合は早期再分極寄り。", "旧心電図で同様なら正常変異寄り。", "胸痛や経時変化があれば虚血を優先して考える。"],
+        traps: ["若いからSTEMIではないと判断しない。", "J点ノッチだけで安全とは言えない。", "下壁誘導のST上昇は鏡像変化を必ず探す。"]
+      },
+      {
+        theme: "ST-T鑑別",
+        topic: "急性心膜炎とSTEMI",
+        diagnosis: "急性心膜炎を考えるが、STEMIを除外する。",
+        why: "びまん性凹型ST上昇とPR低下は心膜炎を示唆しますが、局在性や鏡像変化があれば梗塞を考えます。",
+        findings: ["多くの誘導で凹型ST上昇、aVRでST低下とPR上昇がある。", "ST上昇が広範で、PR低下を伴う。", "胸痛は体位で変化し、局在性のST上昇に乏しい。"],
+        clues: ["ST上昇が冠動脈領域に一致するかを見る。", "PR低下は心膜炎を支持するが単独では決めない。", "aVRの変化も合わせて評価する。"],
+        traps: ["広範ST上昇を全て心膜炎と考えない。", "心膜炎でも心筋炎合併を考える。", "鏡像変化がある場合は梗塞を再検討する。"]
+      },
+      {
+        theme: "ST-T鑑別",
+        topic: "左室肥大ストレインと虚血",
+        diagnosis: "左室肥大ストレインを考えるが、側壁虚血を除外する。",
+        why: "高電位に伴う非対称性ST低下とT波陰転はストレインを示唆しますが、新規変化や症状があれば虚血です。",
+        findings: ["V5〜V6で高いR波にST低下と非対称性陰性T波を伴う。", "I・aVL・V5・V6でstrain patternが目立つ。", "左室高電位と二次性ST-T変化がある。"],
+        clues: ["T波の下降脚と上行脚の非対称性を見る。", "旧心電図で慢性的か確認する。", "胸痛とトロポニン上昇があれば虚血を考える。"],
+        traps: ["ストレインだから虚血はないと決めない。", "高電位基準だけで左室肥大を断定しない。", "側壁誘導の新規変化を見落とさない。"]
+      },
+      {
+        theme: "ST-T鑑別",
+        topic: "たこつぼ心筋症と前壁梗塞",
+        diagnosis: "たこつぼ心筋症を鑑別に入れつつ、前壁梗塞を除外する。",
+        why: "前胸部から広範誘導のST-T変化、QT延長、経時変化はたこつぼで見られますが、冠動脈閉塞との鑑別が必須です。",
+        findings: ["前胸部を中心にST上昇後、広範な深い陰性T波とQT延長が出る。", "ST上昇の分布が単一冠動脈領域を越える。", "急性期後に巨大陰性T波が広範に出現する。"],
+        clues: ["症状、心エコー、冠動脈評価を合わせる。", "QT延長に伴う不整脈リスクも見る。", "前壁梗塞との鑑別は心電図だけでは不十分。"],
+        traps: ["ストレス契機だけで診断しない。", "冠動脈閉塞を除外せずに安心しない。", "巨大陰性T波をWellensだけで説明しない。"]
+      },
+      {
+        theme: "ST-T鑑別",
+        topic: "高K血症とSTEMI mimic",
+        diagnosis: "高K血症を疑い、虚血との鑑別を行う。",
+        why: "尖鋭T波、PR延長、P波低下、QRS延長が連続的に出る時は電解質異常を考えます。",
+        findings: ["広範誘導で先鋭で左右対称なT波増高がある。", "PR延長とP波平低化を伴いQRSが広がり始める。", "前胸部T波増高がde Winterや超急性T波に似る。"],
+        clues: ["腎不全、薬剤、血液検査と照合する。", "局在性ではなく広範性なら高K寄り。", "QRS延長やP波消失があれば重症度が上がる。"],
+        traps: ["テント状T波を全て超急性期梗塞と考えない。", "逆に高Kと決めつけて閉塞性梗塞を見逃さない。", "電解質異常は緊急対応が必要なことがある。"]
+      },
+      {
+        theme: "肥大・負荷",
+        topic: "右室肥大と肺高血圧",
+        diagnosis: "右室肥大または慢性右室圧負荷を考える。",
+        why: "右軸偏位、V1の高R波、右側胸部のST-T変化、肺性P波が組み合わさると右室負荷を示唆します。",
+        findings: ["右軸偏位とV1の高いR波、V1〜V3の陰性T波がある。", "肺性P波に加え、右室ストレイン所見を認める。", "V1でR/S比が高く、右側胸部誘導でST低下を伴う。"],
+        clues: ["成人のV1高R波では後壁梗塞、RBBB、WPWも鑑別する。", "慢性肺疾患や肺高血圧の背景を確認する。", "右房負荷所見も合わせて見る。"],
+        traps: ["V1のR波だけで右室肥大と決めない。", "後壁梗塞の鏡像を見落とさない。", "右脚ブロックがあると判定が難しくなる。"]
+      },
+      {
+        theme: "肥大・負荷",
+        topic: "急性肺塞栓の右室負荷",
+        diagnosis: "急性肺塞栓による右室負荷を疑う。",
+        why: "洞性頻脈、右軸偏位、右脚ブロック、前胸部T波陰転、S1Q3T3は補助所見で、単独では診断できません。",
+        findings: ["洞性頻脈に加え、V1〜V4でT波陰転を認める。", "新規右脚ブロック様波形と右軸偏位がある。", "I誘導S波、III誘導Q波と陰性T波がそろう。"],
+        clues: ["右室ストレインの分布を虚血と鑑別する。", "臨床確率と画像検査が必要。", "頻脈が主所見で心電図が非特異的なことも多い。"],
+        traps: ["S1Q3T3がないから肺塞栓を否定しない。", "T波陰転を前壁虚血だけで説明しない。", "心電図だけで肺塞栓を確定しない。"]
+      },
+      {
+        theme: "肥大・負荷",
+        topic: "肥大型心筋症のQ波と陰性T波",
+        diagnosis: "肥大型心筋症を鑑別に入れる。",
+        why: "側壁や下壁の深い狭いQ波、巨大陰性T波、高電位はHCMで見られ、梗塞や虚血と紛らわしいです。",
+        findings: ["I・aVL・V5〜V6に深く狭いQ波がある。", "左側胸部誘導で高電位と巨大陰性T波を認める。", "若年者の健診心電図で異常Q波とST-T異常がある。"],
+        clues: ["Q波が幅広いか狭いかを見る。", "心エコーで壁肥厚分布を確認する。", "家族歴や失神歴も重要。"],
+        traps: ["Q波を陳旧性梗塞と即断しない。", "巨大陰性T波を虚血だけで説明しない。", "若年者の異常心電図を正常変異で流さない。"]
+      },
+      {
+        theme: "肥大・負荷",
+        topic: "時計回転と反時計回転",
+        diagnosis: "胸部誘導の回転異常を、体型や心臓位置も含めて評価する。",
+        why: "移行帯の位置は体型、横隔膜、心臓の向き、右室負荷、陳旧性梗塞などで変わります。",
+        findings: ["V5〜V6までS波優位で移行帯が遅い。", "V1〜V2からR波が高く移行帯が早い。", "胸部誘導のR波進行が不自然に途切れる。"],
+        clues: ["時計回転では移行帯が左へ遅れる。", "反時計回転では早期にR/Sが逆転する。", "誘導付け間違いや陳旧性前壁梗塞も鑑別する。"],
+        traps: ["回転異常だけで病的と決めない。", "R波増高不良を全て前壁梗塞にしない。", "胸部誘導の貼付位置を確認する。"]
+      },
+      {
+        theme: "若年者・正常変異",
+        topic: "若年者T波陰転と病的陰性T波",
+        diagnosis: "若年者の正常変異と右室負荷・虚血・心筋症を鑑別する。",
+        why: "V1〜V3のT波陰転は若年者で見られることがありますが、深さ、左右対称性、分布、症状で病的所見を探します。",
+        findings: ["若年者でV1〜V3に浅い陰性T波がある。", "前胸部誘導のT波陰転がV4以降まで広がる。", "右側胸部の陰性T波に右軸偏位や右室負荷所見を伴う。"],
+        clues: ["V4以降の陰性T波は病的所見を考えやすい。", "ARVCや肺高血圧も鑑別に入れる。", "旧波形と症状の有無を確認する。"],
+        traps: ["若年者だから正常と決めない。", "陰性T波の深さと分布を記録する。", "小児と成人で正常範囲が異なる。"]
+      },
+      {
+        theme: "若年者・正常変異",
+        topic: "アスリート心電図と病的所見",
+        diagnosis: "運動選手の生理的変化と病的所見を分ける。",
+        why: "洞性徐脈、早期再分極、単純な高電位は生理的でも、深い陰性T波、病的Q波、QT異常は精査対象です。",
+        findings: ["洞性徐脈と早期再分極を認めるが症状はない。", "高電位に加え、側壁誘導で深い陰性T波がある。", "運動選手で下壁誘導のQ波とST-T異常がある。"],
+        clues: ["トレーニング関連変化と心筋症サインを分ける。", "症状、家族歴、失神歴が重要。", "側壁T波陰転は慎重に扱う。"],
+        traps: ["スポーツ心臓で全て説明しない。", "高電位だけで左室肥大症と断定しない。", "正常変異と精査所見の境界を意識する。"]
+      },
+      {
+        theme: "電解質・薬剤",
+        topic: "低K血症",
+        diagnosis: "低K血症を疑う。",
+        why: "ST低下、T波平低化、U波増大、見かけのQT延長がそろう時に考えます。",
+        findings: ["T波が平低化し、T波後に目立つU波を認める。", "ST低下とQU延長があり、T-U融合がある。", "頻発する心室性期外収縮に低K様ST-T変化を伴う。"],
+        clues: ["QTではなくQUとして長く見えている可能性がある。", "利尿薬、嘔吐、下痢などの背景を確認する。", "低Mg合併で不整脈リスクが上がる。"],
+        traps: ["U波をT波と誤認してQT評価を誤らない。", "ジギタリス効果や虚血のST低下と鑑別する。", "検査値で必ず確認する。"]
+      },
+      {
+        theme: "電解質・薬剤",
+        topic: "Ca異常とQT",
+        diagnosis: "Ca異常によるQT変化を考える。",
+        why: "高CaではST部が短くQT短縮、低CaではST部が延長してQT延長を示します。",
+        findings: ["QTが短く、ST部がほとんどないように見える。", "QTが長いがT波の幅よりST部延長が目立つ。", "電解質異常背景でQT変化が主所見になっている。"],
+        clues: ["QT変化のどの部分が伸びているかを見る。", "K異常のT波変化と区別する。", "臨床症状と血清Caで確認する。"],
+        traps: ["QT短縮を見落としやすい。", "QT延長を薬剤性だけで説明しない。", "補正式だけでなく実波形を確認する。"]
+      },
+      {
+        theme: "電解質・薬剤",
+        topic: "ジギタリス効果と虚血",
+        diagnosis: "ジギタリス効果を考えるが、虚血を除外する。",
+        why: "scooped ST低下はジギタリス効果で見られますが、症状や新規変化があれば虚血評価が必要です。",
+        findings: ["下向きにくぼむようなST低下が広範にある。", "T波平低化と短めのQTを伴うST低下がある。", "心房細動の徐拍化にST低下を伴う。"],
+        clues: ["薬剤歴と血中濃度を確認する。", "ST低下の形が盆状ならジギタリス効果寄り。", "中毒では不整脈やAVブロックも見る。"],
+        traps: ["薬剤効果だけで胸痛を説明しない。", "ST低下を全て虚血と決めない。", "中毒と治療域効果を分ける。"]
+      },
+      {
+        theme: "電解質・薬剤",
+        topic: "Naチャネル遮断薬中毒",
+        diagnosis: "Naチャネル遮断薬中毒を疑う。",
+        why: "QRS延長、aVRの終末R波、右軸寄りの終末ベクトルは三環系抗うつ薬などで重要です。",
+        findings: ["QRS幅が広がり、aVRで終末R波が目立つ。", "洞性頻脈にQRS延長とQT延長を伴う。", "右脚ブロック様だが全体に伝導遅延が強い。"],
+        clues: ["aVRのR波高とR/S比を確認する。", "薬剤摂取歴や意識障害の文脈が重要。", "高KやVTとの鑑別を行う。"],
+        traps: ["単なる脚ブロックと見なさない。", "aVRを見ないと重症所見を落とす。", "中毒対応は必ず最新プロトコルで確認する。"]
+      },
+      {
+        theme: "電解質・薬剤",
+        topic: "低体温",
+        diagnosis: "低体温によるOsborn波を考える。",
+        why: "J点のドーム状陽性波、徐脈、QT延長、筋電図様ノイズがそろう時に低体温を疑います。",
+        findings: ["J点にドーム状の陽性波があり、徐脈を伴う。", "広範誘導でOsborn波様のJ波が目立つ。", "震えによる細かな基線ノイズと徐脈がある。"],
+        clues: ["体温、環境曝露、意識状態を確認する。", "早期再分極やBrugada型との鑑別が必要。", "重症低体温では心房細動や心室性不整脈も起こる。"],
+        traps: ["J波を早期再分極だけで片付けない。", "ノイズを心房細動と誤認しない。", "体温情報がないと見逃しやすい。"]
+      },
+      {
+        theme: "ペーシング",
+        topic: "DDDペーシングの基本作動",
+        diagnosis: "DDDペースメーカの心房感知・心室ペーシング作動を読む。",
+        why: "P波を感知して一定AV間隔後に心室スパイクが出るなら、trackingして心室をペーシングしています。",
+        findings: ["P波の後、一定のAV間隔で心室スパイクと幅広いQRSが出る。", "心房スパイクは少なく、心室スパイクがP波に追従する。", "上限レート付近で心室ペーシングが規則的に続く。"],
+        clues: ["スパイク前後のP波とQRSの関係を追う。", "ペーシングモードを知らなくても作動は推定できる。", "心房頻拍をtrackingすると速い心室ペーシングになることがある。"],
+        traps: ["スパイクだけ見てモードを決めない。", "P波感知と心房ペーシングを混同しない。", "ペースメーカ心電図でも自己波形を探す。"]
+      },
+      {
+        theme: "ペーシング",
+        topic: "capture failure",
+        diagnosis: "ペーシング捕捉不全を疑う。",
+        why: "スパイクの後に期待されるP波またはQRSが出ない時は、出力不足、リード問題、閾値上昇などを考えます。",
+        findings: ["心室スパイクが見えるが、その後にQRSが続かない。", "スパイク後のQRS出現が拍ごとに不安定。", "徐脈中にスパイクだけが規則的に出ている。"],
+        clues: ["スパイク直後に脱分極があるかを見る。", "高Kやリード移動で閾値が上がることがある。", "感知不全とはスパイクの出るタイミングが違う。"],
+        traps: ["小さなスパイクをノイズとして見逃さない。", "捕捉不全と出力停止を混同しない。", "徐脈症状があれば緊急度が高い。"]
+      },
+      {
+        theme: "ペーシング",
+        topic: "undersensing",
+        diagnosis: "ペースメーカ感知不全を疑う。",
+        why: "自己QRSや自己P波を感知せず、不適切なタイミングでスパイクが出ます。",
+        findings: ["自己QRSの直後にも関わらず心室スパイクが出る。", "T波付近に不適切なスパイクが入る。", "自己リズムとペーシングスパイクが競合している。"],
+        clues: ["スパイクが早すぎるか、自己波形を無視しているかを見る。", "リード感度設定やリード異常を考える。", "R on Tの危険性を意識する。"],
+        traps: ["捕捉不全と感知不全を言い間違えやすい。", "スパイクが出ているから正常作動とは限らない。", "自己拍との関係を一拍ずつ追う。"]
+      },
+      {
+        theme: "ペーシング",
+        topic: "oversensing",
+        diagnosis: "ペースメーカ過感知を疑う。",
+        why: "ノイズやT波を感知して必要なペーシングが抑制されると、徐脈やポーズが生じます。",
+        findings: ["徐脈なのに期待されるペーシングスパイクが出ない。", "筋電図様ノイズの後にペーシングが抑制される。", "長いポーズがあり、スパイク欠如が目立つ。"],
+        clues: ["感知されている余計な信号を探す。", "リード断線や筋電位干渉を考える。", "マグネット反応やデバイスチェックが必要になることがある。"],
+        traps: ["単なるペースメーカ停止と即断しない。", "ノイズを心室細動と誤認しない。", "症状がある徐脈では迅速な確認が必要。"]
+      },
+      {
+        theme: "ペーシング",
+        topic: "CRTと左脚領域ペーシング",
+        diagnosis: "生理的ペーシングまたはCRT波形を、通常の心室ペーシングと区別する。",
+        why: "右室心尖部ペーシングよりQRSが狭い、または軸やV1形状が異なる場合は刺激部位を考えます。",
+        findings: ["ペーシングスパイク後のQRSが比較的狭い。", "V1で右脚ブロック様になり、左脚領域ペーシングを示唆する。", "両室ペーシングでQRS形が通常の右室ペーシングと異なる。"],
+        clues: ["デバイス種別とリード位置を確認する。", "刺激からQRS立ち上がりまでの時間を見る。", "ペーシングでも梗塞評価の難しさは残る。"],
+        traps: ["ペーシング波形を全て同じと考えない。", "QRSが狭いから自己伝導と決めない。", "デバイス情報なしに断定しない。"]
+      },
+      {
+        theme: "アーチファクト",
+        topic: "筋電図アーチファクトとVT",
+        diagnosis: "筋電図アーチファクトによる偽性心室頻拍を疑う。",
+        why: "基線に高周波ノイズが重なっても、QRSが規則的に隠れて見える場合があります。",
+        findings: ["wide QRS頻拍様の波形だが、規則的な正常QRSが透けて見える。", "一部誘導だけ激しく乱れ、他誘導では洞調律が保たれる。", "脈拍や意識状態が心電図上の頻拍と一致しない。"],
+        clues: ["同時記録の複数誘導で本当のQRSを探す。", "四肢誘導だけ乱れる場合は体動や筋電図を考える。", "臨床所見とモニター波形を照合する。"],
+        traps: ["見た目の迫力でVTと即断しない。", "逆に本物のVTをアーチファクト扱いしない。", "脈と波形の一致を必ず確認する。"]
+      },
+      {
+        theme: "アーチファクト",
+        topic: "誘導付け間違い",
+        diagnosis: "四肢誘導の付け間違いを疑う。",
+        why: "I誘導陰性、aVR陽性、胸部誘導のR波進行が保たれる時は左右上肢電極逆付けなどを考えます。",
+        findings: ["I誘導が全体に陰性でaVRが陽性になっている。", "下壁誘導と側壁誘導の関係が不自然。", "胸部誘導のR波進行は自然だが四肢誘導だけ矛盾する。"],
+        clues: ["右胸心では胸部誘導のR波進行も変わる。", "上肢逆付けではI誘導が反転しやすい。", "再装着して再検するのが確実。"],
+        traps: ["右胸心や広範梗塞と誤診しない。", "aVR陽性をすぐ重症虚血と結びつけない。", "胸部誘導との整合を見ないと気づきにくい。"]
+      },
+      {
+        theme: "アーチファクト",
+        topic: "紙送り速度と電位設定",
+        diagnosis: "紙送り速度または感度設定の違いを疑う。",
+        why: "記録条件が違うと心拍数、QRS幅、電位が大きく変わって見えます。",
+        findings: ["全ての波形が横に伸び、徐脈やQT延長に見える。", "波形が横に圧縮され、頻脈に見える。", "電位が極端に高く、肥大基準を満たすように見える。"],
+        clues: ["25 mm/sか50 mm/sかを確認する。", "10 mm/mVか感度変更があるかを見る。", "グリッド間隔を数えて補正する。"],
+        traps: ["記録条件を見ずに診断しない。", "紙送り違いを不整脈と誤認しない。", "自動計測値をそのまま信じない。"]
+      },
+      {
+        theme: "頻脈",
+        topic: "AF with aberrancyとPVC連発",
+        diagnosis: "心房細動中の変行伝導とPVC連発を鑑別する。",
+        why: "不規則RR中にwide QRSが混じる時、先行周期、連結期、QRS形の一貫性を見ます。",
+        findings: ["AF中に右脚ブロック型のwide QRSが散発する。", "long-short sequenceの後にwide QRSが出る。", "wide QRSの形が比較的一定で連結期は一定しない。"],
+        clues: ["Ashman現象では先行周期が手がかり。", "PVCでは代償性休止と固定連結期を見やすい。", "複数誘導でQRS初期ベクトルを比較する。"],
+        traps: ["AF中のwide QRSを全てPVCとしない。", "変行伝導を見落とすと過剰診断になる。", "多発する場合はVT移行も警戒する。"]
+      },
+      {
+        theme: "心筋梗塞",
+        topic: "超急性期T波",
+        diagnosis: "超急性期心筋梗塞のT波変化を疑う。",
+        why: "ST上昇が明瞭になる前に、局在した幅広く対称性の高いT波が出ることがあります。",
+        findings: ["胸痛直後、前胸部誘導で幅広く対称性の高いT波がある。", "下壁誘導に局在したT波増高と軽いST変化がある。", "高Kほど広範ではなく、冠動脈領域に一致したT波増高がある。"],
+        clues: ["経時変化を短時間で追う。", "鏡像変化や症状との一致を見る。", "高K血症の広範なテント状T波と比較する。"],
+        traps: ["ST上昇前だから正常と判断しない。", "高Kと決めつけない。", "T波の高さだけでなく幅と局在を見る。"]
+      }
+    ];
+
+    function buildCards() {
+      const cards = [];
+      baseCases.forEach((item, caseIndex) => {
+        item.findings.forEach((finding, findingIndex) => {
+          item.clues.forEach((clue, clueIndex) => {
+            item.traps.forEach((trap, trapIndex) => {
+              const context = contexts[(caseIndex + findingIndex + clueIndex + trapIndex) % contexts.length];
+              const id = `l1-${String(caseIndex + 1).padStart(2, "0")}-${findingIndex + 1}${clueIndex + 1}${trapIndex + 1}`;
+              cards.push({
+                id,
+                theme: item.theme,
+                topic: item.topic,
+                finding: `【${context}】${finding}`,
+                clue,
+                trap,
+                diagnosis: item.diagnosis,
+                reason: `${item.why} 補助所見として「${clue}」。鑑別の落とし穴は「${trap}」。1級相当では単一所見ではなく、誘導分布、軸、QRS幅、P波、ST-T、臨床文脈、旧心電図との差を組み合わせて判断します。`
+              });
+            });
+          });
+        });
+      });
+      return cards;
+    }
+
+    let cards = buildCards();
+    let state = loadState();
+    let currentTheme = BASE_THEMES.includes(state.currentTheme) ? state.currentTheme : ALL_THEME;
+    let reviewOnly = Boolean(state.reviewOnly);
+    let currentIndex = Number.isInteger(state.currentIndex) ? state.currentIndex : 0;
+    let keyword = typeof state.keyword === "string" ? state.keyword : "";
+    let showingBack = false;
+
+    const elements = {
+      themeButtons: document.getElementById("themeButtons"),
+      totalCount: document.getElementById("totalCount"),
+      doneCount: document.getElementById("doneCount"),
+      reviewCount: document.getElementById("reviewCount"),
+      newCount: document.getElementById("newCount"),
+      keywordInput: document.getElementById("keywordInput"),
+      clearSearchButton: document.getElementById("clearSearchButton"),
+      allModeButton: document.getElementById("allModeButton"),
+      reviewModeButton: document.getElementById("reviewModeButton"),
+      themeBadge: document.getElementById("themeBadge"),
+      cardCount: document.getElementById("cardCount"),
+      cardContent: document.getElementById("cardContent"),
+      studyCard: document.getElementById("studyCard"),
+      flipButton: document.getElementById("flipButton"),
+      prevButton: document.getElementById("prevButton"),
+      nextButton: document.getElementById("nextButton"),
+      understoodButton: document.getElementById("understoodButton"),
+      needsReviewButton: document.getElementById("needsReviewButton"),
+      statusLine: document.getElementById("statusLine"),
+      exportResult: document.getElementById("exportResult"),
+      exportText: document.getElementById("exportText"),
+      exportLabel: document.getElementById("exportLabel"),
+      jsonExportButton: document.getElementById("jsonExportButton"),
+      csvExportButton: document.getElementById("csvExportButton"),
+      resetButton: document.getElementById("resetButton"),
+      shuffleButton: document.getElementById("shuffleButton"),
+      bankSummary: document.getElementById("bankSummary"),
+      topicList: document.getElementById("topicList")
+    };
+
+    elements.keywordInput.value = keyword;
+
+    function loadState() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if (parsed && typeof parsed === "object") {
+          return {
+            statuses: parsed.statuses && typeof parsed.statuses === "object" ? parsed.statuses : {},
+            currentTheme: parsed.currentTheme,
+            reviewOnly: parsed.reviewOnly,
+            currentIndex: parsed.currentIndex,
+            keyword: parsed.keyword
+          };
+        }
+      } catch (error) {
+        // LocalStorageが使えない場合も、現在のセッションでは学習できるようにします。
+      }
+      return { statuses: {}, currentTheme: ALL_THEME, reviewOnly: false, currentIndex: 0, keyword: "" };
+    }
+
+    function saveState() {
+      state.currentTheme = currentTheme;
+      state.reviewOnly = reviewOnly;
+      state.currentIndex = currentIndex;
+      state.keyword = keyword;
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (error) {
+        // プライベートブラウズなどで保存できない場合は、画面操作だけ継続します。
+      }
+    }
+
+    function matchesKeyword(card) {
+      const query = keyword.trim().toLowerCase();
+      if (!query) return true;
+      const haystack = `${card.theme} ${card.topic} ${card.finding} ${card.clue} ${card.trap} ${card.diagnosis} ${card.reason}`.toLowerCase();
+      return haystack.includes(query);
+    }
+
+    function getVisibleCards() {
+      return cards.filter((card) => {
+        const themeMatch = currentTheme === ALL_THEME || card.theme === currentTheme;
+        const reviewMatch = !reviewOnly || state.statuses[card.id] === "review";
+        return themeMatch && reviewMatch && matchesKeyword(card);
+      });
+    }
+
+    function getThemeCards() {
+      return cards.filter((card) => {
+        const themeMatch = currentTheme === ALL_THEME || card.theme === currentTheme;
+        return themeMatch && matchesKeyword(card);
+      });
+    }
+
+    function clampIndex(visibleCards) {
+      if (visibleCards.length === 0) {
+        currentIndex = 0;
+        return;
+      }
+      if (currentIndex < 0) currentIndex = visibleCards.length - 1;
+      if (currentIndex >= visibleCards.length) currentIndex = 0;
+    }
+
+    function renderThemeButtons() {
+      elements.themeButtons.innerHTML = "";
+      BASE_THEMES.forEach((theme) => {
+        const button = document.createElement("button");
+        button.className = "filter-button";
+        button.type = "button";
+        button.textContent = theme;
+        button.setAttribute("aria-pressed", String(theme === currentTheme));
+        button.addEventListener("click", () => {
+          currentTheme = theme;
+          currentIndex = 0;
+          showingBack = false;
+          render();
+        });
+        elements.themeButtons.appendChild(button);
+      });
+    }
+
+    function renderStats() {
+      const targetCards = getThemeCards();
+      const done = targetCards.filter((card) => state.statuses[card.id] === "understood").length;
+      const review = targetCards.filter((card) => state.statuses[card.id] === "review").length;
+      const unanswered = targetCards.length - done - review;
+
+      elements.totalCount.textContent = targetCards.length;
+      elements.doneCount.textContent = done;
+      elements.reviewCount.textContent = review;
+      elements.newCount.textContent = unanswered;
+    }
+
+    function renderModeButtons() {
+      elements.allModeButton.setAttribute("aria-pressed", String(!reviewOnly));
+      elements.reviewModeButton.setAttribute("aria-pressed", String(reviewOnly));
+    }
+
+    function renderTopicList() {
+      elements.bankSummary.textContent = `${baseCases.length}論点から${cards.length}問を生成しています。問題文と解説は独自作成です。`;
+      elements.topicList.innerHTML = "";
+      baseCases.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = `${item.theme}: ${item.topic}`;
+        elements.topicList.appendChild(li);
+      });
+    }
+
+    function renderCard() {
+      const visibleCards = getVisibleCards();
+      clampIndex(visibleCards);
+
+      if (visibleCards.length === 0) {
+        elements.themeBadge.textContent = reviewOnly ? "要復習なし" : currentTheme;
+        elements.cardCount.textContent = "0 / 0";
+        elements.cardContent.innerHTML = `
+          <div class="empty-state">
+            <div>
+              <p class="face-label">表示できるカードがありません</p>
+              <p>テーマ、検索語、要復習モードを見直してください。</p>
+            </div>
+          </div>
+        `;
+        elements.flipButton.disabled = true;
+        elements.prevButton.disabled = true;
+        elements.nextButton.disabled = true;
+        elements.understoodButton.disabled = true;
+        elements.needsReviewButton.disabled = true;
+        elements.statusLine.textContent = "条件に合うカードがありません。";
+        return;
+      }
+
+      const card = visibleCards[currentIndex];
+      const status = state.statuses[card.id];
+      const statusText = status === "understood" ? "理解した" : status === "review" ? "要復習" : "未判定";
+
+      elements.themeBadge.textContent = card.theme;
+      elements.cardCount.textContent = `${currentIndex + 1} / ${visibleCards.length}`;
+      elements.flipButton.disabled = false;
+      elements.prevButton.disabled = false;
+      elements.nextButton.disabled = false;
+      elements.understoodButton.disabled = false;
+      elements.needsReviewButton.disabled = false;
+      elements.flipButton.textContent = showingBack ? "所見に戻る" : "解説を見る";
+
+      // 表面は「所見、補助所見、ひっかけ」を分け、1級で必要な鑑別の視点を保つ。
+      elements.cardContent.innerHTML = showingBack
+        ? `
+          <div>
+            <p class="face-label">診断候補・理由</p>
+            <p class="card-topic">${escapeHtml(card.topic)}</p>
+            <p class="answer">${escapeHtml(card.diagnosis)}</p>
+            <p class="reason">${escapeHtml(card.reason)}</p>
+          </div>
+        `
+        : `
+          <div>
+            <p class="face-label">所見</p>
+            <p class="card-topic">${escapeHtml(card.topic)}</p>
+            <p class="finding">${escapeHtml(card.finding)}</p>
+            <div class="meta-lines">
+              <p><strong>補助所見:</strong> ${escapeHtml(card.clue)}</p>
+              <p><strong>ひっかけ:</strong> ${escapeHtml(card.trap)}</p>
+            </div>
+          </div>
+        `;
+      elements.statusLine.textContent = `現在の判定: ${statusText} / ID: ${card.id}`;
+    }
+
+    function render() {
+      renderThemeButtons();
+      renderStats();
+      renderModeButtons();
+      renderCard();
+      renderTopicList();
+      saveState();
+    }
+
+    function flipCard() {
+      if (getVisibleCards().length === 0) return;
+      showingBack = !showingBack;
+      renderCard();
+    }
+
+    function moveCard(delta) {
+      const visibleCards = getVisibleCards();
+      if (visibleCards.length === 0) return;
+      currentIndex += delta;
+      showingBack = false;
+      clampIndex(visibleCards);
+      saveState();
+      renderCard();
+    }
+
+    function markCard(status) {
+      const visibleCards = getVisibleCards();
+      if (visibleCards.length === 0) return;
+      const card = visibleCards[currentIndex];
+      state.statuses[card.id] = status;
+      showingBack = false;
+
+      // 要復習モード中に理解済みにするとカードが一覧から外れるため、同じ位置で再描画します。
+      const updatedVisible = getVisibleCards();
+      if (currentIndex >= updatedVisible.length) {
+        currentIndex = Math.max(0, updatedVisible.length - 1);
+      }
+
+      render();
+    }
+
+    function shuffleVisibleCards() {
+      const visibleCards = getVisibleCards();
+      if (visibleCards.length < 2) return;
+      const visibleIds = new Set(visibleCards.map((card) => card.id));
+      const randomRank = new Map(visibleCards.map((card) => [card.id, Math.random()]));
+
+      cards = cards.slice().sort((a, b) => {
+        const aVisible = visibleIds.has(a.id);
+        const bVisible = visibleIds.has(b.id);
+        if (aVisible && bVisible) return randomRank.get(a.id) - randomRank.get(b.id);
+        if (aVisible) return -1;
+        if (bVisible) return 1;
+        return a.id.localeCompare(b.id);
+      });
+
+      currentIndex = 0;
+      showingBack = false;
+      render();
+    }
+
+    function makeExportRows() {
+      return cards.map((card) => ({
+        id: card.id,
+        theme: card.theme,
+        topic: card.topic,
+        finding: card.finding,
+        clue: card.clue,
+        trap: card.trap,
+        diagnosis: card.diagnosis,
+        reason: card.reason,
+        status: state.statuses[card.id] || "unanswered"
+      }));
+    }
+
+    function exportJson() {
+      const payload = {
+        app: "心電図検定 1級演習",
+        exportedAt: new Date().toISOString(),
+        note: "学習用データです。患者情報は含みません。公式問題の転載ではありません。",
+        totalCards: cards.length,
+        cards: makeExportRows()
+      };
+      const text = JSON.stringify(payload, null, 2);
+      showExportText("JSON", text);
+      downloadText("ecg-kentei-level1-progress.json", text, "application/json");
+    }
+
+    function exportCsv() {
+      const header = ["id", "theme", "topic", "finding", "clue", "trap", "diagnosis", "reason", "status"];
+      const rows = makeExportRows().map((card) => header.map((key) => card[key]));
+      const csv = [header, ...rows].map((row) => row.map(csvEscape).join(",")).join("\n");
+      showExportText("CSV", csv);
+      downloadText("ecg-kentei-level1-progress.csv", "\ufeff" + csv, "text/csv;charset=utf-8");
+    }
+
+    function downloadText(filename, text, type) {
+      try {
+        const blob = new Blob([text], { type });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        elements.statusLine.textContent = "ダウンロードできない場合は、表示された内容をコピーしてください。";
+      }
+    }
+
+    function showExportText(kind, text) {
+      elements.exportResult.hidden = false;
+      elements.exportLabel.textContent = `${kind}エクスポート結果`;
+      elements.exportText.value = text;
+      elements.exportText.focus();
+      elements.exportText.select();
+      elements.statusLine.textContent = `${kind}を作成しました。ダウンロードまたはコピーで保存できます。`;
+    }
+
+    function resetProgress() {
+      const confirmed = window.confirm("理解・要復習の記録をすべて削除します。よろしいですか？");
+      if (!confirmed) return;
+      state = { statuses: {}, currentTheme, reviewOnly: false, currentIndex: 0, keyword: "" };
+      reviewOnly = false;
+      currentIndex = 0;
+      keyword = "";
+      elements.keywordInput.value = "";
+      showingBack = false;
+      render();
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function csvEscape(value) {
+      return `"${String(value).replaceAll('"', '""')}"`;
+    }
+
+    elements.keywordInput.addEventListener("input", () => {
+      keyword = elements.keywordInput.value;
+      currentIndex = 0;
+      showingBack = false;
+      render();
+    });
+
+    elements.clearSearchButton.addEventListener("click", () => {
+      keyword = "";
+      elements.keywordInput.value = "";
+      currentIndex = 0;
+      showingBack = false;
+      render();
+    });
+
+    elements.allModeButton.addEventListener("click", () => {
+      reviewOnly = false;
+      currentIndex = 0;
+      showingBack = false;
+      render();
+    });
+
+    elements.reviewModeButton.addEventListener("click", () => {
+      reviewOnly = true;
+      currentIndex = 0;
+      showingBack = false;
+      render();
+    });
+
+    elements.flipButton.addEventListener("click", flipCard);
+    elements.studyCard.addEventListener("click", flipCard);
+    elements.studyCard.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        flipCard();
+      }
+    });
+
+    elements.prevButton.addEventListener("click", () => moveCard(-1));
+    elements.nextButton.addEventListener("click", () => moveCard(1));
+    elements.understoodButton.addEventListener("click", () => markCard("understood"));
+    elements.needsReviewButton.addEventListener("click", () => markCard("review"));
+    elements.jsonExportButton.addEventListener("click", exportJson);
+    elements.csvExportButton.addEventListener("click", exportCsv);
+    elements.resetButton.addEventListener("click", resetProgress);
+    elements.shuffleButton.addEventListener("click", shuffleVisibleCards);
+
+    render();
+  </script>
+</body>
+</html>
